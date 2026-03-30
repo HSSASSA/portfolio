@@ -88,7 +88,30 @@ if (personal.photo) {
   img.src = personal.photo;
   img.alt = personal.name;
   img.className = 'hero-photo';
+  img.loading = 'lazy';
   document.getElementById('nav-name').appendChild(img);
+
+  const lightbox = document.createElement('div');
+  lightbox.id = 'photo-lightbox';
+  const lbImg = document.createElement('img');
+  lbImg.alt = personal.name;
+  lightbox.appendChild(lbImg);
+  document.body.appendChild(lightbox);
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('open');
+    lbImg.src = '';
+  };
+
+  img.addEventListener('click', () => {
+    lbImg.src = personal.photo;
+    lightbox.classList.add('open');
+  });
+
+  lightbox.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 }
 
 /* ──────────────────────────────────────────────────────────

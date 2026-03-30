@@ -187,11 +187,44 @@ ul { list-style: none; }
 @keyframes heroIn { from { opacity:0; transform:translateY(30px) } to { opacity:1; transform:none } }
 
 .hero-photo {
-  width: 190px; height: 190px;
+  width: clamp(110px, 24vw, 190px);
+  height: clamp(110px, 24vw, 190px);
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--accent);
   box-shadow: 0 0 30px rgba(0,245,212,.3);
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: zoom-in;
+}
+.hero-photo:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 40px rgba(0,245,212,.5);
+}
+.hero-photo:active {
+  transform: scale(0.96);
+}
+#photo-lightbox {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 10, 14, 0.93);
+  z-index: 9998;
+  cursor: zoom-out;
+  padding: 1rem;
+}
+#photo-lightbox.open {
+  display: flex;
+}
+#photo-lightbox img {
+  max-width: min(92vw, 680px);
+  max-height: min(92vh, 680px);
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 0 60px rgba(0, 245, 212, 0.5);
 }
 .hero-tag {
   display: inline-block;
@@ -569,10 +602,41 @@ footer {
   }
   .nav-links.open { display: flex; }
   .nav-toggle { display: flex; }
-  .edu-cert-grid { grid-template-columns: 1fr; }
-  .timeline { padding-left: 1.2rem; }
-  .timeline-header { flex-direction: column; }
+
+  .container { padding: 0 1rem; }
+  .section { padding: 4.5rem 0; }
+
+  .hero {
+    min-height: 80vh;
+    padding: 6rem 1rem 2.5rem;
+  }
+  .hero-content { max-width: 100%; width: 100%; padding: 0 0.5rem; }
+  .hero-tag { margin-bottom: 0.8rem; }
+  .hero-bio { max-width: 100%; font-size: 0.92rem; margin-bottom: 1.6rem; }
+  .hero-cta { justify-content: center; }
+  .hero-orbs, .scroll-indicator { display: none; }
+
+  .section-header { flex-direction: column; align-items: flex-start; margin-bottom: 2rem; }
+  .section-title { font-size: 1.8rem; }
+
+  .domains-grid, .projects-grid, .activities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edu-cert-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+
+  .timeline {
+    padding-left: 0;
+  }
+  .timeline::before { left: -2px; }
+  .timeline-item { margin-bottom: 1.75rem; }
+  .timeline-header { flex-direction: column; align-items: flex-start; }
   .timeline-meta { align-items: flex-start; }
+
+  .contact-intro { font-size: 0.92rem; }
+  .contact-links { gap: 0.7rem; }
+  .contact-link { width: 100%; justify-content: center; }
+
   body { cursor: auto; }
   .cursor { display: none; }
 }
