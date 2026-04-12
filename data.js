@@ -14,7 +14,7 @@ const PORTFOLIO = {
     name:         "Abdelilah Hssassa",
     tag:          "Data Analyst - Data Scientist",
     title:        "Turning Raw Data into\nIntelligent Systems & Actionable Insights",
-    bio:          "As a PhD candidate in AI & Cybersecurity, State Engineer in Data & AI, I architect data pipelines, build machine-learning solutions, and make raw data ready for analysis — from extracting data from different sources to interactive Dashboards and intelligent systems.",
+    bio:          "As a State Engineer in Data & AI, PhD candidate in AI & Cybersecurity, I architect data pipelines, build machine-learning solutions, and make raw data ready for analysis — from extracting data from different sources to interactive Dashboards and intelligent systems.",
     location:     "Morocco",
     email:        "abdelilah0hssassa@gmail.com",
     linkedin:     "https://linkedin.com/in/yourprofile",
