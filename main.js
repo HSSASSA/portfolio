@@ -139,7 +139,7 @@ const FR_CONTENT = {
   personal: {
     tag: 'Analyste de données - Data Scientist',
     title: 'Transformer les données brutes en systèmes intelligents et informations exploitables',
-    bio: "En tant que doctorant en IA et cybersécurité, Ingénieur d'État en Data & IA, j'architecture des pipelines de données, je crée des solutions de l'intelligence artificielle et je prépare les données pour l'analyse — de l'extraction multi-source aux dashboards interactifs et systèmes intelligents.",
+    bio: "En tant qu'Ingénieur d'État en Data & IA, doctorant en IA et cybersécurité, j'architecture des pipelines de données, je crée des solutions de l'intelligence artificielle et je prépare les données pour l'analyse — de l'extraction multi-source aux dashboards interactifs et systèmes intelligents.",
   },
   domains: [
     { title: 'Analyse de données & BI', desc: 'Tableaux de bord Power BI, SQL Server, SSIS/SSAS, modélisation des données et visualisation des KPIs.' },
