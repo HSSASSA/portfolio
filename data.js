@@ -79,11 +79,13 @@ const PORTFOLIO = {
     company : "RMA", 
     period : "Current",
     type : "Fulltime",
-    bullets : "Identified and resolved data anomalies, inconsistencies, and quality issues within customer databases.",
-              "Consolidated data from multiple sources to build a 360° customer view.",
-              "Enriched customer records by integrating external and internal data sources.",
-              "Designed and developed interactive dashboards and KPI visualizations."],
-  tools: ["Python", "SQL", "DBeaver", "Power BI", "QlikView", "Jira"],
+    bullets : [
+      "Identified and resolved data anomalies, inconsistencies, and quality issues within customer databases.",
+      "Consolidated data from multiple sources to build a 360° customer view.",
+      "Enriched customer records by integrating external and internal data sources.",
+      "Designed and developed interactive dashboards and KPI visualizations."
+    ],
+      tools: ["Python", "SQL", "DBeaver", "Power BI", "QlikView", "Jira"],
     },
     {
       role:    "Data Analyst & Back-end Developer",
