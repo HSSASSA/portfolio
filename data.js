@@ -14,7 +14,7 @@ const PORTFOLIO = {
     name:         "Abdelilah Hssassa",
     tag:          "Data Analyst - Data Scientist",
     title:        "Turning Raw Data into\nIntelligent Systems & Actionable Insights",
-    bio:          "As a State Engineer in Data & AI, PhD candidate in AI & Cybersecurity, I architect data pipelines, build machine-learning solutions, and make raw data ready for analysis — from extracting data from different sources to interactive Dashboards and intelligent systems.",
+    bio:          "As a State Engineer in Data & AI, I architect data pipelines, build machine-learning solutions, and make raw data ready for analysis — from extracting data from different sources to interactive Dashboards and intelligent systems.",
     location:     "Morocco",
     email:        "abdelilah0hssassa@gmail.com",
     linkedin:     "https://linkedin.com/in/yourprofile",
@@ -74,10 +74,21 @@ const PORTFOLIO = {
 
   /* ── PROFESSIONAL EXPERIENCE ─────────────────────────────── */
   experience: [
+
+    {role : "Data Analyst",
+    company : "RMA", 
+    period : "Current",
+    type : "Fulltime",
+    bullets : "Identified and resolved data anomalies, inconsistencies, and quality issues within customer databases.",
+              "Consolidated data from multiple sources to build a 360° customer view.",
+              "Enriched customer records by integrating external and internal data sources.",
+              "Designed and developed interactive dashboards and KPI visualizations."],
+  tools: ["Python", "SQL", "DBeaver", "Power BI", "QlikView", "Jira"],
+    },
     {
       role:    "Data Analyst & Back-end Developer",
       company: "SSNA",
-      period:  "Current",
+      period:  "3 months",
       type:    "Internship - Freelance",
       bullets: [
         "Automation of some repetitive tasks.",
