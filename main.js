@@ -139,7 +139,7 @@ const FR_CONTENT = {
   personal: {
     tag: 'Analyste de données - Data Scientist',
     title: 'Transformer les données brutes en systèmes intelligents et informations exploitables',
-    bio: "En tant qu'Ingénieur d'État en Data & IA, doctorant en IA et cybersécurité, j'architecture des pipelines de données, je crée des solutions de l'intelligence artificielle et je prépare les données pour l'analyse — de l'extraction multi-source aux dashboards interactifs et systèmes intelligents.",
+    bio: "En tant qu'Ingénieur d'État en Data & IA, j'architecture des pipelines de données, je crée des solutions de l'intelligence artificielle et je prépare les données pour l'analyse — de l'extraction multi-source aux dashboards interactifs et systèmes intelligents.",
   },
   domains: [
     { title: 'Analyse de données & BI', desc: 'Tableaux de bord Power BI, SQL Server, SSIS/SSAS, modélisation des données et visualisation des KPIs.' },
@@ -150,10 +150,22 @@ const FR_CONTENT = {
     { title: 'OCR & Document AI', desc: 'Tesseract, EasyOCR, extraction NLP — numérisation et validation de cartes d’assurance et pièces d’identité.' },
   ],
   experience: [
+   {role : "Analyste de données",
+    company : "RMA", 
+    period : "Poste Actuel",
+    type : "Temps plein",
+    bullets : [
+      "Correction des anomalies et problèmes de qualité des bases clients."
+      "Consolidation multi-sources : vue client à 360°."
+      "Enrichissement des données clients (sources internes/externes)."
+      "Tableaux de bord interactifs et visualisations de KPI."
+    ],
+      tools: ["Python", "SQL", "DBeaver", "Power BI", "QlikView", "Jira"],
+    },
     {
       role: 'Data Analyst & Développeur Back-end',
       company: 'SSNA',
-      period: 'Actuel',
+      period: '3 mois',
       type: 'Stage - Freelance',
       bullets: [
         'Automatisation de tâches répétitives.',
