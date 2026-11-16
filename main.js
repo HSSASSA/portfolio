@@ -155,10 +155,10 @@ const FR_CONTENT = {
     period : "Poste Actuel",
     type : "Temps plein",
     bullets : [
-      "Correction des anomalies et problèmes de qualité des bases clients."
-      "Consolidation multi-sources : vue client à 360°."
-      "Enrichissement des données clients (sources internes/externes)."
-      "Tableaux de bord interactifs et visualisations de KPI."
+      "Correction des anomalies et problèmes de qualité des bases clients.",
+      "Consolidation multi-sources : vue client à 360°.",
+      "Enrichissement des données clients (sources internes/externes).",
+      "Tableaux de bord interactifs et visualisations de KPI.",
     ],
       tools: ["Python", "SQL", "DBeaver", "Power BI", "QlikView", "Jira"],
     },
