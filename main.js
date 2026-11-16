@@ -218,6 +218,7 @@ const FR_CONTENT = {
     { title: 'Analyseur de conversations WhatsApp', desc: 'Outil NLP explorant exports WhatsApp : fréquence, topics, sentiment, contributeurs.' },
     { title: 'Similarité de questions Quora (DL)', desc: 'Modèle de similarité sémantique pour paires de questions avec réseaux siamois et embeddings BERT.' },
     { title: 'Application Web Spring Boot', desc: 'Application full-stack avec Spring Boot, Spring Data, Thymeleaf et Bootstrap 5.' },
+        { title: 'Observatoire des finances publiques', desc: 'Tableau de bord web interactif pour explorer et visualiser les indicateurs des finances publiques.' },
   ],
   education: [
     { degree: 'Doctorat en Intelligence Artificielle & Cybersécurité', detail: 'Recherche : détection proactive de cyberattaques par IA.' },

@@ -1,0 +1,680 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Observatoire des finances publiques</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: en-tête, navigation par onglets (ancres), puis panneaux de lecture à une colonne, graphiques pleine largeur. */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --surface2:#e9efed; --fg:#14201d; --muted:#53635f; --line:#d3dcd9;
+  --accent:#0b6e5f; --accent-soft:#d6ece7;
+  --c1:#0b6e5f; --c2:#7d8f8a; --c3:#c4561a;
+  --good:#1c7a3d; --warn:#9a6a10; --crit:#b42318;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1513; --surface:#141d1b; --surface2:#1b2724; --fg:#e5eeeb; --muted:#9db0aa; --line:#2a3935;
+  --accent:#4fd1b8; --accent-soft:#15332d; --c1:#4fd1b8; --c2:#71847e; --c3:#f0a35e;
+  --good:#5fd28a; --warn:#e6b64f; --crit:#ff8a7a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1513; --surface:#141d1b; --surface2:#1b2724; --fg:#e5eeeb; --muted:#9db0aa; --line:#2a3935;
+  --accent:#4fd1b8; --accent-soft:#15332d; --c1:#4fd1b8; --c2:#71847e; --c3:#f0a35e;
+  --good:#5fd28a; --warn:#e6b64f; --crit:#ff8a7a; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-sans);padding-block:0 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-weight:600;line-height:1.2;margin:0;text-wrap:balance}
+h1{font-size:clamp(24px,4.2vw,34px);letter-spacing:-.01em}
+h2{font-size:20px}
+h3{font-size:15px}
+p{margin:0}
+a{color:var(--accent)}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+header.top{padding-block:28px 18px;display:grid;gap:10px}
+header.top p.lede{max-width:68ch;color:var(--muted)}
+.meta{font:400 12px/1.5 var(--f-mono);color:var(--muted)}
+
+nav.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;margin-bottom:22px}
+nav.tabs a{padding:10px 14px;text-decoration:none;color:var(--muted);font-weight:500;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.tabs a:hover{color:var(--fg)}
+nav.tabs a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--accent)}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+.page{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+.page>*{min-width:0}
+.page-head{display:grid;gap:6px;max-width:72ch}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:end}
+.field{display:grid;gap:4px;min-width:0}
+.field label,.field .lab{font:500 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select,button.btn,input[type=range]{font:inherit;color:var(--fg)}
+select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 28px 7px 10px;max-width:100%}
+button.btn{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer}
+button.btn:hover{background:var(--surface2)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface);flex-wrap:wrap}
+.seg button{font:inherit;color:var(--muted);background:transparent;border:0;padding:7px 12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg);font-weight:500}
+input[type=range]{accent-color:var(--accent);width:min(260px,100%)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.panel>h3{margin-bottom:2px}
+.panel .sub{color:var(--muted);font-size:13px;margin-bottom:10px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.stat{background:var(--surface);padding:14px 16px;display:grid;gap:4px;align-content:start;min-width:0}
+.stat .k{font:500 11px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-size:24px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.stat .d{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .down{color:var(--crit)} .warnc{color:var(--warn)}
+
+.chart{position:relative;min-height:200px}
+.chart svg{display:block;width:100%;height:auto;touch-action:pan-y;overflow:visible}
+.chart text{font:11px var(--f-sans);fill:var(--muted)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .ax{stroke:var(--muted);stroke-width:1;opacity:.5}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid}
+.legend i.dash{border-top-style:dashed}
+.legend i.blk{height:10px;width:10px;border:0;border-radius:2px}
+.legend i.dot{width:9px;height:9px;border:0;border-radius:50%}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-size:12px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.14);z-index:3;white-space:nowrap;top:8px}
+.tip b{font-weight:600}
+.tip .r{display:flex;gap:10px;justify-content:space-between}
+.tip .sw{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+
+.bars{display:grid;gap:12px}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:baseline}
+.bar-row .lab{font-size:14px}
+.bar-row .val{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar-row .track{grid-column:1/-1;height:8px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.bar-row .fill{height:100%;background:var(--c1);border-radius:2px}
+.bars.dep .fill{background:var(--c2)}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.tbl.tall{max-height:440px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11px/1.2 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface);position:sticky;top:0;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.sel td{background:var(--accent-soft)}
+.chip{display:inline-block;font:500 11px/1 var(--f-mono);padding:4px 7px;border-radius:4px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.chip.good{background:var(--accent-soft);color:var(--accent)}
+.chip.hit{background:color-mix(in srgb,var(--c3) 20%,transparent);color:var(--c3)}
+ul.reasons{margin:0;padding:0;list-style:none;display:grid;gap:2px;font-size:13px}
+.note{font-size:13px;color:var(--muted);max-width:76ch}
+
+.method{display:grid;gap:26px;max-width:78ch;grid-template-columns:minmax(0,1fr)}
+.method section{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
+.method ul{margin:0;padding-left:1.15em;display:grid;gap:5px}
+.method code{font-family:var(--f-mono);font-size:.9em;background:var(--surface2);padding:1px 5px;border-radius:3px}
+
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .35s ease}}
+@media (max-width:520px){.stat .v{font-size:21px}th,td{padding:8px 9px}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Projet de démonstration · Data Science</div>
+  <h1>Observatoire des finances publiques</h1>
+  <p class="lede">Suivi des recettes et des dépenses, prévision à 12 mois et détection explicable d’anomalies de déclaration. Tous les calculs s’exécutent dans votre navigateur.</p>
+  <div class="meta">Données synthétiques, sans lien avec des données réelles · montants en millions de dirhams (M MAD)</div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <a href="#tableau" id="t-tableau">Tableau de bord</a>
+  <a href="#prevision" id="t-prevision">Prévision</a>
+  <a href="#anomalies" id="t-anomalies">Anomalies</a>
+  <a href="#methode" id="t-methode">Méthodologie</a>
+</nav>
+
+<!-- TABLEAU DE BORD -->
+<main>
+<section class="page" id="p-tableau">
+  <div class="page-head">
+    <h2>Exécution des recettes et des dépenses</h2>
+    <p class="muted">Cumul depuis janvier, comparé à la même période de l’année précédente.</p>
+  </div>
+  <div class="controls">
+    <div class="field"><label for="yr">Année</label><select id="yr"></select></div>
+    <div class="field"><label for="sr">Agrégat suivi</label><select id="sr"></select></div>
+  </div>
+  <div class="stats" id="kpis"></div>
+  <div class="panel">
+    <h3 id="dash-title">Évolution mensuelle</h3>
+    <p class="sub">Montants mensuels en M MAD. Survolez le graphique pour lire les valeurs.</p>
+    <div class="chart" id="ch-dash"></div>
+  </div>
+  <div class="cols">
+    <div class="panel"><h3>Recettes par nature</h3><p class="sub" id="rec-sub"></p><div class="bars" id="bars-rec"></div></div>
+    <div class="panel"><h3>Dépenses par nature</h3><p class="sub" id="dep-sub"></p><div class="bars dep" id="bars-dep"></div></div>
+  </div>
+</section>
+
+<!-- PRÉVISION -->
+<section class="page" id="p-prevision" hidden>
+  <div class="page-head">
+    <h2>Prévision des recettes à 12 mois</h2>
+    <p class="muted">Trois modèles sont comparés sur les 12 derniers mois, tenus à l’écart de l’apprentissage. Choisissez un modèle pour afficher sa prévision, réajustée sur tout l’historique, de novembre 2026 à octobre 2027. Les scores de cette période servent à la comparaison : ils ne constituent pas une estimation indépendante après sélection du meilleur modèle.</p>
+  </div>
+  <div class="controls">
+    <div class="field"><label for="fs">Série</label><select id="fs"></select></div>
+    <div class="field"><span class="lab">Modèle</span><div class="seg" id="fm" role="group" aria-label="Modèle"></div></div>
+  </div>
+  <div class="stats" id="fk"></div>
+  <div class="panel">
+    <h3 id="fc-title">Historique et prévision</h3>
+    <p class="sub" id="fc-sub"></p>
+    <div class="chart" id="ch-fc"></div>
+  </div>
+  <div>
+    <h3 style="margin-bottom:8px">Comparaison des modèles sur la période de test</h3>
+    <div class="tbl"><table id="tb-models"></table></div>
+    <p class="note" style="margin-top:8px">MAPE : erreur absolue moyenne en pourcentage. Couverture : nombre de mois de test dont la valeur réelle tombe dans l’intervalle à 80 %. Une couverture proche de 10 sur 12 indique un intervalle bien calibré.</p>
+  </div>
+</section>
+
+<!-- ANOMALIES -->
+<section class="page" id="p-anomalies" hidden>
+  <div class="page-head">
+    <h2>Détection d’anomalies dans les déclarations de TVA</h2>
+    <p class="muted">800 entreprises fictives, dont 5 % présentent une anomalie injectée au moment de la génération. Un Isolation Forest note chaque dossier. Chaque signalement est accompagné de ses motifs, comparés à la médiane du secteur.</p>
+  </div>
+  <div class="controls">
+    <div class="field"><label for="kp">Part de dossiers signalés : <span id="kp-v" class="num">5 %</span></label><input type="range" id="kp" min="1" max="15" step="0.5" value="5"></div>
+    <div class="field"><label for="ax">Axe horizontal</label><select id="ax"></select></div>
+    <div class="field"><label for="ay">Axe vertical</label><select id="ay"></select></div>
+    <div class="field"><span class="lab">Population</span><button class="btn" id="regen" type="button">Générer un nouveau jeu <span class="muted mono" id="seed-v"></span></button></div>
+  </div>
+  <div class="stats" id="ak"></div>
+  <div class="cols">
+    <div class="panel"><h3>Entreprises et signalements</h3><p class="sub">Chaque point est une entreprise. Les points orange sont ceux que le modèle propose de contrôler.</p><div class="chart" id="ch-sc"></div></div>
+    <div class="panel"><h3>Courbe précision-rappel</h3><p class="sub">Précision en fonction du rappel quand on descend dans le classement des scores. La ligne pointillée est le niveau d’un tirage au hasard.</p><div class="chart" id="ch-pr"></div></div>
+  </div>
+  <div>
+    <h3 style="margin-bottom:8px">Dossiers à contrôler en priorité</h3>
+    <div class="tbl tall"><table id="tb-alerts"></table></div>
+    <p class="note" style="margin-top:8px">La colonne « Étiquette synthétique » n’existe que parce que les anomalies ont été injectées. Sur des données réelles, il n’y a pas de vérité terrain : le retour des contrôles sert à construire les étiquettes au fil du temps.</p>
+  </div>
+</section>
+
+<!-- MÉTHODOLOGIE -->
+<section class="page" id="p-methode" hidden>
+  <div class="page-head"><h2>Méthodologie, limites et éthique</h2></div>
+  <div class="method">
+    <section>
+      <h3>Données</h3>
+      <p>Les séries mensuelles (janvier 2018 à octobre 2026) sont générées par un script déterministe, avec une graine fixe. Elles reproduisent des régularités réalistes : croissance tendancielle, pics de l’impôt sur les sociétés aux quatre échéances d’acompte (mars, juin, septembre, décembre), dépenses d’investissement concentrées en fin d’année, creux du printemps 2020 et hausse des charges de compensation en 2022. La population d’entreprises est tirée au hasard par secteur. Aucune donnée réelle n’est utilisée.</p>
+    </section>
+    <section>
+      <h3>Prévision</h3>
+      <ul>
+        <li><b>Naïf saisonnier</b> : valeur du même mois un an plus tôt. Il sert de plancher : un modèle plus complexe qui ne le bat pas n’a pas sa place.</li>
+        <li><b>Holt-Winters multiplicatif</b> : niveau, tendance et saisonnalité lissés. Les trois paramètres de lissage sont choisis par grille en minimisant l’erreur relative à un pas, plafonnée à 20 % pour limiter l’influence des mois de crise.</li>
+        <li><b>Régression log-linéaire</b> : tendance, 12 effets mensuels et une indicatrice pour mars à juin 2020, estimées par moindres carrés.</li>
+        <li><b>Validation</b> : découpage temporel (jamais aléatoire) avec 12 mois de test. Les intervalles à 80 % viennent de l’écart-type robuste des erreurs d’apprentissage, élargi avec l’horizon pour Holt-Winters. La couverture observée sur la période de test vérifie leur calibrage.</li>
+      </ul>
+      <p><b>Limites.</b> Huit ans d’historique et un seul choc majeur. Une année de test donne une mesure bruitée : un classement des modèles sur 12 points peut changer avec une autre fenêtre. De plus, choisir le meilleur modèle sur cette même période rend son score optimiste ; il ne s’agit donc pas d’une évaluation finale indépendante. Les réformes fiscales, les calendriers de paiement et les variables macroéconomiques (activité, importations, prix) ne sont pas intégrés. En production, on utiliserait une validation à origine glissante, une période de test finale intacte et des variables explicatives.</p>
+    </section>
+    <section>
+      <h3>Détection d’anomalies</h3>
+      <ul>
+        <li><b>Variables</b> : TVA collectée sur chiffre d’affaires, crédit de TVA sur chiffre d’affaires (en logarithme), variation du chiffre d’affaires, achats sur chiffre d’affaires. Chacune est centrée sur la médiane de son secteur, pour ne pas confondre une particularité sectorielle avec une anomalie.</li>
+        <li><b>Modèle</b> : Isolation Forest, 150 arbres, sous-échantillons de 256 dossiers. Il isole d’autant plus vite un dossier que celui-ci est atypique.</li>
+        <li><b>Explication</b> : pour chaque dossier signalé, les deux variables les plus éloignées de la médiane du secteur (écart robuste, en MAD) sont affichées avec leurs valeurs.</li>
+        <li><b>Évaluation</b> : précision et rappel au seuil choisi, et précision moyenne (aire sous la courbe précision-rappel). L’exactitude globale serait trompeuse avec 5 % d’anomalies.</li>
+      </ul>
+      <p><b>Limites.</b> Un score élevé est un motif de contrôle, pas une preuve de fraude. Le modèle repère l’inhabituel, y compris des situations légitimes (entreprise en forte croissance, exportateur avec un crédit de TVA structurel). Si seuls les dossiers déjà signalés sont contrôlés, les données futures reflètent ces contrôles : il faut garder un échantillon aléatoire de dossiers contrôlés pour mesurer le modèle sans biais. Le seuil doit suivre la capacité réelle de contrôle des services.</p>
+    </section>
+    <section>
+      <h3>Éthique et protection des données</h3>
+      <ul>
+        <li>Les données fiscales réelles sont couvertes par le secret professionnel et par la loi 09-08 sur la protection des données personnelles, sous le contrôle de la CNDP. Une mise en œuvre réelle suppose minimisation, pseudonymisation, habilitations et journalisation des accès.</li>
+        <li>Toute décision à effet sur une entreprise reste prise par un agent. L’outil classe et explique, il ne sanctionne pas.</li>
+        <li>Le modèle doit être audité régulièrement : taux de signalement par secteur et par taille d’entreprise, taux de confirmation après contrôle, dérive des données.</li>
+        <li>Un dossier signalé doit pouvoir être expliqué à l’entreprise concernée, d’où le choix de variables lisibles plutôt que d’un modèle opaque.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Équivalent en production</h3>
+      <p>Python avec <code>pandas</code> pour la préparation, <code>statsmodels</code> (<code>ExponentialSmoothing</code>) ou <code>Prophet</code> pour les séries, <code>scikit-learn</code> (<code>IsolationForest</code>) et <code>SHAP</code> pour l’explication. Orchestration des traitements, tests de qualité des données, versionnage des modèles et suivi de la dérive pour un déploiement maintenable. Ce site réimplémente les algorithmes en JavaScript pour tourner sans serveur.</p>
+    </section>
+  </div>
+</section>
+</main>
+
+<footer> Réalisé par Abdelilah HSSASSA.</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var nf0=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0});
+var nf1=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
+var nf2=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+var MOIS_L=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+/* ---------- utilitaires ---------- */
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){var u=0;while(!u)u=r();var v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function mean(a){var s=0;for(var i=0;i<a.length;i++)s+=a[i];return s/a.length}
+function median(a){var b=a.slice().sort(function(x,y){return x-y}),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2}
+function robustSd(a){var m=median(a);return 1.4826*median(a.map(function(v){return Math.abs(v-m)}))||1e-9}
+function sum(a){return a.reduce(function(s,v){return s+v},0)}
+function pct(x,d){return (d===0?nf0:nf1).format(x*100)+' %'}
+function spct(x){return (x>=0?'+':'−')+nf1.format(Math.abs(x)*100)+' %'}
+function md(v){return nf1.format(v/1000)+' Md MAD'}
+function niceTicks(min,max,n){
+  var span=(max-min)||Math.abs(max)||1,s0=span/n,mag=Math.pow(10,Math.floor(Math.log10(s0))),nm=s0/mag;
+  var step=(nm<1.5?1:nm<3?2:nm<7?5:10)*mag,lo=Math.floor(min/step+1e-9)*step,hi=Math.ceil(max/step-1e-9)*step,t=[];
+  for(var v=lo;v<=hi+step*1e-6;v+=step)t.push(+v.toFixed(10));return t}
+
+/* ---------- données synthétiques ---------- */
+var N=106,Y0=2018,LASTY=2026,LASTM=10;
+function norm(a){var m=mean(a);return a.map(function(v){return v/m})}
+var COVID={26:.92,27:.70,28:.62,29:.72,30:.88,31:.95};
+var SPEC={
+  tva:{label:'TVA',kind:'rec',base:8600,g:.055,noise:.022,seas:norm([1,.95,1.02,1,.98,1.02,1.05,.97,1,1.03,.98,1.05])},
+  is:{label:'Impôt sur les sociétés',kind:'rec',base:3500,g:.075,noise:.05,seas:norm([.5,.45,2.2,.5,.45,2.1,.5,.45,2.2,.5,.45,2.4])},
+  ir:{label:'Impôt sur le revenu',kind:'rec',base:2700,g:.04,noise:.02,seas:norm([1.12,1,1.1,1.02,.96,.95,.96,.9,.95,.97,.98,1.12])},
+  dou:{label:'Droits de douane',kind:'rec',base:1450,g:.03,noise:.035,seas:norm([.95,.95,1,1,1,1.02,1.05,.97,1,1.02,1,1.04])},
+  pers:{label:'Personnel',kind:'dep',base:9700,g:.03,noise:.008,seas:norm([1,1,1,1,1,1,1,1,1,1,1,1.06])},
+  fonc:{label:'Fonctionnement',kind:'dep',base:3800,g:.035,noise:.03,seas:norm([.85,.9,.95,1,1,1,.95,.9,1,1.05,1.1,1.3])},
+  inv:{label:'Investissement',kind:'dep',base:4200,g:.04,noise:.06,seas:norm([.6,.6,.75,.8,.85,.9,.9,.8,1,1.2,1.4,1.9])},
+  comp:{label:'Compensation',kind:'dep',base:1100,g:0,noise:.1,seas:norm([1,1,1,1,1,1,1,1,1,1,1,1])}
+};
+var SERIES={};
+(function build(){
+  var r=rng(42);
+  Object.keys(SPEC).forEach(function(k){
+    var s=SPEC[k],v=[];
+    for(var i=0;i<N;i++){
+      var m=i%12,y=Math.floor(i/12),shock=1;
+      if(s.kind==='rec'&&COVID[i])shock=COVID[i];
+      if(k==='inv'&&(i===27||i===28||i===29))shock=.82;
+      if(k==='comp'){shock=1+.15*Math.sin(i/6); if(y===4&&m>=2)shock*=1.7; if(y===5)shock*=1.35;}
+      v.push(s.base*Math.pow(1+s.g,i/12)*s.seas[m]*shock*(1+s.noise*gauss(r)));
+    }
+    SERIES[k]={label:s.label,kind:s.kind,v:v};
+  });
+  var rec=[],dep=[];
+  for(var i=0;i<N;i++){
+    rec.push(SERIES.tva.v[i]+SERIES.is.v[i]+SERIES.ir.v[i]+SERIES.dou.v[i]);
+    dep.push(SERIES.pers.v[i]+SERIES.fonc.v[i]+SERIES.inv.v[i]+SERIES.comp.v[i]);
+  }
+  SERIES.rec_total={label:'Recettes ordinaires (total)',kind:'rec',v:rec};
+  SERIES.dep_total={label:'Dépenses (total)',kind:'dep',v:dep};
+})();
+function idxLabel(i){return MOIS[i%12]+' '+(Y0+Math.floor(i/12))}
+function idxLong(i){return MOIS_L[i%12]+' '+(Y0+Math.floor(i/12))}
+
+/* ---------- graphiques SVG ---------- */
+function legendHtml(items){
+  return '<div class="legend">'+items.map(function(it){
+    var st=it.band?'background:'+it.color+';opacity:.28':'border-top-color:'+it.color;
+    return '<span><i class="'+(it.band?'blk':it.dash?'dash':'')+'" style="'+st+'"></i>'+it.label+'</span>'}).join('')+'</div>'}
+
+function drawLine(el,cfg){
+  var W=Math.floor(el.clientWidth);if(W<60)return;
+  var narrow=W<520,H=cfg.height||(narrow?240:300),m={l:narrow?44:56,r:14,t:14,b:26};
+  var ys=[],xset={};
+  cfg.series.forEach(function(s){s.pts.forEach(function(p){ys.push(p[1]);xset[p[0]]=1})});
+  (cfg.bands||[]).forEach(function(b){b.pts.forEach(function(p){ys.push(p[1],p[2]);xset[p[0]]=1})});
+  (cfg.dots||[]).forEach(function(d){ys.push(d.y);xset[d.x]=1});
+  var xs=Object.keys(xset).map(Number).sort(function(a,b){return a-b});
+  var x0=cfg.xMin!=null?cfg.xMin:xs[0],x1=cfg.xMax!=null?cfg.xMax:xs[xs.length-1];
+  var ymin=cfg.yMin!=null?cfg.yMin:Math.min.apply(null,ys),ymax=cfg.yMax!=null?cfg.yMax:Math.max.apply(null,ys);
+  var tk=niceTicks(ymin,ymax,4),yA=tk[0],yB=tk[tk.length-1];
+  var pw=W-m.l-m.r;
+  function X(v){return m.l+(v-x0)/((x1-x0)||1)*pw}
+  function Y(v){return m.t+(1-(v-yA)/((yB-yA)||1))*(H-m.t-m.b)}
+  var yf=cfg.yFmt||nf0.format.bind(nf0);
+  var g='';
+  tk.forEach(function(t){g+='<line class="grid" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'"/><text x="'+(m.l-8)+'" y="'+(Y(t)+4).toFixed(1)+'" text-anchor="end">'+yf(t)+'</text>'});
+  g+='<line class="ax" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(yA)+'" y2="'+Y(yA)+'"/>';
+  cfg.xTicks(W).forEach(function(t,i,a){
+    var anchor=i===0&&t[0]===x0?'start':i===a.length-1&&t[0]===x1?'end':'middle';
+    g+='<text x="'+X(t[0]).toFixed(1)+'" y="'+(H-8)+'" text-anchor="'+anchor+'">'+t[1]+'</text>'});
+  (cfg.bands||[]).forEach(function(b){
+    var up=b.pts.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[2]).toFixed(1)}).join('');
+    var lo=b.pts.slice().reverse().map(function(p){return 'L'+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join('');
+    g+='<path d="'+up+lo+'Z" style="fill:'+b.color+';fill-opacity:.2;stroke:none"/>'});
+  (cfg.markers||[]).forEach(function(mk){
+    var x=X(mk.x).toFixed(1);
+    g+='<line x1="'+x+'" x2="'+x+'" y1="'+m.t+'" y2="'+(H-m.b)+'" style="stroke:var(--muted);stroke-dasharray:2 4;opacity:.7"/><text x="'+(+x+5)+'" y="'+(m.t+10)+'">'+mk.label+'</text>'});
+  cfg.series.forEach(function(s){
+    var d=s.pts.map(function(p,i){return (i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join('');
+    g+='<path d="'+d+'" fill="none" style="stroke:'+s.color+';stroke-width:'+(s.width||2)+';'+(s.dash?'stroke-dasharray:'+s.dash+';':'')+'stroke-linejoin:round;stroke-linecap:round"/>';
+    if(s.endDot){var p=s.pts[s.pts.length-1];g+='<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="3.5" style="fill:'+s.color+'"/>'}
+  });
+  (cfg.dots||[]).forEach(function(d){g+='<circle cx="'+X(d.x).toFixed(1)+'" cy="'+Y(d.y).toFixed(1)+'" r="5" style="fill:'+d.color+';stroke:var(--surface);stroke-width:2"/>'});
+  g+='<line class="vl" y1="'+m.t+'" y2="'+(H-m.b)+'" style="stroke:var(--muted);opacity:0"/>';
+  var leg=legendHtml(cfg.series.map(function(s){return {label:s.name,color:s.color,dash:!!s.dash}}).concat((cfg.bands||[]).map(function(b){return {label:b.name,color:b.color,band:true}})));
+  el.innerHTML=leg+'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(cfg.label||'Graphique')+'">'+g+'</svg><div class="tip" hidden></div>';
+  var svg=el.querySelector('svg'),tip=el.querySelector('.tip'),vl=svg.querySelector('.vl');
+  var maps=cfg.series.map(function(s){var mm={};s.pts.forEach(function(p){mm[p[0]]=p[1]});return mm});
+  var bm=(cfg.bands||[]).map(function(b){var mm={};b.pts.forEach(function(p){mm[p[0]]=[p[1],p[2]]});return mm});
+  function leave(){tip.hidden=true;vl.style.opacity=0}
+  function move(e){
+    var rc=svg.getBoundingClientRect(),px=(e.clientX-rc.left)/rc.width*W;
+    if(px<m.l-6||px>W-m.r+6){leave();return}
+    var xv=x0+(px-m.l)/pw*(x1-x0),best=xs[0];
+    xs.forEach(function(x){if(Math.abs(x-xv)<Math.abs(best-xv))best=x});
+    var rows='';
+    cfg.series.forEach(function(s,i){if(maps[i][best]!=null)rows+='<div class="r"><span><i class="sw" style="background:'+s.color+'"></i>'+s.name+'</span><b class="num">'+yf(maps[i][best])+'</b></div>'});
+    (cfg.bands||[]).forEach(function(b,i){var q=bm[i][best];if(q)rows+='<div class="r"><span>'+b.name+'</span><b class="num">'+yf(q[0])+' – '+yf(q[1])+'</b></div>'});
+    if(!rows){leave();return}
+    tip.innerHTML='<b>'+cfg.tipTitle(best)+'</b>'+rows;tip.hidden=false;
+    var sx=X(best);vl.setAttribute('x1',sx);vl.setAttribute('x2',sx);vl.style.opacity=.6;
+    var left=sx/W*rc.width,tw=tip.offsetWidth;
+    tip.style.left=Math.max(0,Math.min(rc.width-tw,left>rc.width/2?left-tw-10:left+10))+'px';
+    tip.style.top=(legendOffset(el)+8)+'px';
+  }
+  svg.addEventListener('pointermove',move);svg.addEventListener('pointerleave',leave);
+}
+function legendOffset(el){var l=el.querySelector('.legend');return l?l.offsetHeight+8:0}
+
+function drawScatter(el,cfg){
+  var W=Math.floor(el.clientWidth);if(W<60)return;
+  var narrow=W<520,H=narrow?260:320,m={l:narrow?44:52,r:14,t:12,b:40};
+  var xv=cfg.pts.map(function(p){return p.x}),yv=cfg.pts.map(function(p){return p.y});
+  var tx=niceTicks(Math.min.apply(null,xv),Math.max.apply(null,xv),4),ty=niceTicks(Math.min.apply(null,yv),Math.max.apply(null,yv),4);
+  var xa=tx[0],xb=tx[tx.length-1],ya=ty[0],yb=ty[ty.length-1];
+  function X(v){return m.l+(v-xa)/((xb-xa)||1)*(W-m.l-m.r)}
+  function Y(v){return m.t+(1-(v-ya)/((yb-ya)||1))*(H-m.t-m.b)}
+  var g='';
+  ty.forEach(function(t){g+='<line class="grid" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(t).toFixed(1)+'" y2="'+Y(t).toFixed(1)+'"/><text x="'+(m.l-8)+'" y="'+(Y(t)+4).toFixed(1)+'" text-anchor="end">'+nf0.format(t)+'</text>'});
+  tx.forEach(function(t){g+='<line class="grid" y1="'+m.t+'" y2="'+(H-m.b)+'" x1="'+X(t).toFixed(1)+'" x2="'+X(t).toFixed(1)+'" style="opacity:.5"/><text x="'+X(t).toFixed(1)+'" y="'+(H-m.b+15)+'" text-anchor="middle">'+nf0.format(t)+'</text>'});
+  g+='<text x="'+((m.l+W-m.r)/2)+'" y="'+(H-4)+'" text-anchor="middle">'+cfg.xLabel+'</text>';
+  g+='<text transform="translate(12 '+((m.t+H-m.b)/2)+') rotate(-90)" text-anchor="middle">'+cfg.yLabel+'</text>';
+  var rest=cfg.pts.filter(function(p){return !p.flag}),fl=cfg.pts.filter(function(p){return p.flag});
+  rest.forEach(function(p){g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="2.8" style="fill:var(--c2);fill-opacity:.5"/>'});
+  fl.forEach(function(p){g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="4.2" style="fill:var(--c3);stroke:var(--surface);stroke-width:1"/>'});
+  g+='<circle class="hl" r="7" style="fill:none;stroke:var(--fg);stroke-width:1.5;opacity:0"/>';
+  el.innerHTML=legendHtml([{label:'Non signalée',color:'var(--c2)',dot:1},{label:'Signalée',color:'var(--c3)',dot:1}]).replace(/class="" style="border-top-color:([^"]+)"/g,'class="dot" style="background:$1"')+'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Nuage de points des entreprises">'+g+'</svg><div class="tip" hidden></div>';
+  var svg=el.querySelector('svg'),tip=el.querySelector('.tip'),hl=svg.querySelector('.hl');
+  svg.addEventListener('pointermove',function(e){
+    var rc=svg.getBoundingClientRect(),k=W/rc.width,px=(e.clientX-rc.left)*k,py=(e.clientY-rc.top)*k,best=null,bd=18*18;
+    cfg.pts.forEach(function(p){var dx=X(p.x)-px,dy=Y(p.y)-py,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p}});
+    if(!best){tip.hidden=true;hl.style.opacity=0;return}
+    hl.setAttribute('cx',X(best.x));hl.setAttribute('cy',Y(best.y));hl.style.opacity=1;
+    tip.innerHTML='<b>'+best.id+'</b> · '+best.sector+'<div class="r"><span>'+cfg.xLabel+'</span><b class="num">'+nf1.format(best.x)+'</b></div><div class="r"><span>'+cfg.yLabel+'</span><b class="num">'+nf1.format(best.y)+'</b></div><div class="r"><span>Score</span><b class="num">'+nf2.format(best.score)+'</b></div>';
+    tip.hidden=false;var sx=X(best.x)/k,tw=tip.offsetWidth;
+    tip.style.left=Math.max(0,Math.min(rc.width-tw,sx>rc.width/2?sx-tw-12:sx+12))+'px';tip.style.top=(legendOffset(el)+8)+'px';
+  });
+  svg.addEventListener('pointerleave',function(){tip.hidden=true;hl.style.opacity=0});
+}
+
+/* ---------- onglet 1 : tableau de bord ---------- */
+var dash={year:LASTY,key:'rec_total'};
+function monthsIn(y){return y===LASTY?LASTM:12}
+function ytd(arr,y,mths){var o=(y-Y0)*12;return sum(arr.slice(o,o+mths))}
+function barsHtml(keys,y,mths,kind){
+  var rows=keys.map(function(k){var a=ytd(SERIES[k].v,y,mths),b=y>Y0?ytd(SERIES[k].v,y-1,mths):null;return {k:k,a:a,b:b}});
+  var tot=sum(rows.map(function(r){return r.a}));
+  rows.sort(function(p,q){return q.a-p.a});
+  return rows.map(function(r){
+    var d=r.b?r.a/r.b-1:null,cls=d==null?'':(kind==='rec'?(d>=0?'up':'down'):'muted');
+    return '<div class="bar-row"><span class="lab">'+SERIES[r.k].label+'</span><span class="val"><b>'+md(r.a)+'</b> · '+nf0.format(r.a/tot*100)+' %'+(d==null?'':' · <span class="'+cls+'">'+spct(d)+'</span>')+'</span><div class="track"><div class="fill" style="width:'+(r.a/tot*100).toFixed(1)+'%"></div></div></div>'}).join('')}
+function renderDash(){
+  var y=dash.year,mt=monthsIn(y),rec=SERIES.rec_total.v,dep=SERIES.dep_total.v;
+  var rA=ytd(rec,y,mt),dA=ytd(dep,y,mt),rB=y>Y0?ytd(rec,y-1,mt):null,dB=y>Y0?ytd(dep,y-1,mt):null;
+  var tva=ytd(SERIES.tva.v,y,mt);
+  function delta(a,b,good){if(b==null)return '<span class="d">Pas d’année de comparaison</span>';var d=a/b-1;return '<span class="d"><span class="'+(good==null?'':(d>=0===good?'up':'down'))+'">'+(d>=0?'▲ ':'▼ ')+spct(d).slice(1)+'</span> vs même période '+(y-1)+'</span>'}
+  var soldeA=rA-dA,soldeB=rB!=null?rB-dB:null;
+  $('#kpis').innerHTML=
+    '<div class="stat"><span class="k">Recettes cumulées</span><span class="v">'+md(rA)+'</span>'+delta(rA,rB,true)+'</div>'+
+    '<div class="stat"><span class="k">Dépenses cumulées</span><span class="v">'+md(dA)+'</span>'+delta(dA,dB,null)+'</div>'+
+    '<div class="stat"><span class="k">Solde (recettes − dépenses)</span><span class="v '+(soldeA>=0?'up':'down')+'">'+(soldeA<0?'−':'')+md(Math.abs(soldeA))+'</span><span class="d">'+(soldeB==null?'Pas d’année de comparaison':'Année précédente : '+(soldeB<0?'−':'')+md(Math.abs(soldeB)))+'</span></div>'+
+    '<div class="stat"><span class="k">Part de la TVA</span><span class="v">'+nf1.format(tva/rA*100)+' %</span><span class="d">des recettes ordinaires cumulées</span></div>';
+  var per=mt===12?'janvier à décembre '+y:'janvier à '+MOIS_L[mt-1]+' '+y;
+  $('#rec-sub').textContent=per+'. Part des recettes et variation vs '+(y-1)+'.';
+  $('#dep-sub').textContent=per+'. Part des dépenses et variation vs '+(y-1)+'.';
+  $('#bars-rec').innerHTML=barsHtml(['tva','is','ir','dou'],y,mt,'rec');
+  $('#bars-dep').innerHTML=barsHtml(['pers','fonc','inv','comp'],y,mt,'dep');
+  $('#dash-title').textContent=SERIES[dash.key].label+' : évolution mensuelle';
+  drawDash();
+}
+function drawDash(){
+  var y=dash.year,mt=monthsIn(y),arr=SERIES[dash.key].v,o=(y-Y0)*12;
+  var cur=[],prev=[];
+  for(var m=0;m<mt;m++)cur.push([m,arr[o+m]]);
+  if(y>Y0)for(var q=0;q<12;q++)prev.push([q,arr[o-12+q]]);
+  var series=[];
+  if(prev.length)series.push({name:String(y-1),color:'var(--c2)',pts:prev,width:1.8});
+  series.push({name:String(y),color:'var(--c1)',pts:cur,width:2.6,endDot:true});
+  drawLine($('#ch-dash'),{series:series,yMin:0,xMin:0,xMax:11,label:'Évolution mensuelle de '+SERIES[dash.key].label,
+    yFmt:function(v){return nf0.format(v)},tipTitle:function(x){return MOIS_L[x]},
+    xTicks:function(W){var a=[];for(var i=0;i<12;i+=(W<520?2:1))a.push([i,MOIS[i]]);return a}});
+}
+
+/* ---------- onglet 2 : prévision ---------- */
+var MODELS={
+  snaive:{label:'Naïf saisonnier'},
+  hw:{label:'Holt-Winters'},
+  reg:{label:'Régression log-linéaire'}
+};
+var fc={key:'rec_total',model:'hw'},fcCache={},Z80=1.2816;
+function hwRun(y,a,b,g){
+  var n=y.length,m=12,m0=mean(y.slice(0,m)),m1=mean(y.slice(m,2*m)),tr0=(m1-m0)/m,tr=tr0,l=m0+tr*(m-1)/2,s=[],errs=[];
+  for(var i=0;i<m;i++)s.push(y[i]/(m0+tr0*(i-(m-1)/2)));
+  for(var t=m;t<n;t++){
+    var si=t%m,pred=(l+tr)*s[si];errs.push((y[t]-pred)/y[t]);
+    var ln=a*(y[t]/s[si])+(1-a)*(l+tr);tr=b*(ln-l)+(1-b)*tr;s[si]=g*(y[t]/ln)+(1-g)*s[si];l=ln}
+  return {l:l,tr:tr,s:s,errs:errs,n:n}}
+function hwFit(y){
+  var best=null,A=[.1,.2,.3,.4,.5,.6],B=[.01,.05,.1,.2],G=[.1,.2,.3,.4,.5,.6];
+  A.forEach(function(a){B.forEach(function(b){G.forEach(function(g){
+    var r=hwRun(y,a,b,g),sse=0;r.errs.forEach(function(e){sse+=Math.min(e*e,.04)});
+    if(!best||sse<best.sse){best=r;best.sse=sse;best.a=a;best.b=b;best.g=g}})})});
+  return best}
+function design(t){var m=t%12,x=[1,t/12];for(var j=1;j<12;j++)x.push(m===j?1:0);x.push(t>=26&&t<=29?1:0);return x}
+function ols(X,y){
+  var p=X[0].length,A=[];for(var i=0;i<p;i++){A.push(new Array(p+1).fill(0))}
+  X.forEach(function(x,r){for(var i=0;i<p;i++){for(var j=0;j<p;j++)A[i][j]+=x[i]*x[j];A[i][p]+=x[i]*y[r]}});
+  for(var i2=0;i2<p;i2++)A[i2][i2]+=1e-9;
+  for(var c=0;c<p;c++){var pv=c;for(var r2=c+1;r2<p;r2++)if(Math.abs(A[r2][c])>Math.abs(A[pv][c]))pv=r2;
+    var tmp=A[c];A[c]=A[pv];A[pv]=tmp;
+    for(var r3=0;r3<p;r3++){if(r3===c)continue;var f=A[r3][c]/A[c][c];for(var k=c;k<=p;k++)A[r3][k]-=f*A[c][k]}}
+  return A.map(function(row,i){return row[p]/row[i]})}
+function forecastModel(id,y,H){
+  var n=y.length,mean_=[],sigma,fh=function(){return 1};
+  if(id==='snaive'){
+    var e=[];for(var t=12;t<n;t++){if((t>=26&&t<=31)||(t-12>=26&&t-12<=31))continue;e.push(Math.log(y[t]/y[t-12]))}
+    sigma=1.4826*median(e.map(Math.abs));
+    for(var h=1;h<=H;h++)mean_.push(y[n-12+((h-1)%12)]);
+  }else if(id==='hw'){
+    var f=hwFit(y);sigma=robustSd(f.errs);fh=function(h){return Math.sqrt(1+.1*(h-1))};
+    for(var h2=1;h2<=H;h2++)mean_.push((f.l+h2*f.tr)*f.s[(n-1+h2)%12]);
+  }else{
+    var X=[],ly=[];for(var t2=0;t2<n;t2++){X.push(design(t2));ly.push(Math.log(y[t2]))}
+    var b=ols(X,ly),res=X.map(function(x,i){var p=0;for(var j=0;j<b.length;j++)p+=x[j]*b[j];return ly[i]-p});
+    sigma=robustSd(res);
+    for(var h3=0;h3<H;h3++){var x=design(n+h3),p=0;for(var j2=0;j2<b.length;j2++)p+=x[j2]*b[j2];mean_.push(Math.exp(p))}
+  }
+  var lo=mean_.map(function(v,i){return v*Math.exp(-Z80*sigma*fh(i+1))}),hi=mean_.map(function(v,i){return v*Math.exp(Z80*sigma*fh(i+1))});
+  return {mean:mean_,lo:lo,hi:hi,sigma:sigma}}
+function forecastAll(key){
+  if(fcCache[key])return fcCache[key];
+  var y=SERIES[key].v,n=y.length,H=12,out={},act=y.slice(n-H);
+  Object.keys(MODELS).forEach(function(id){
+    var bt=forecastModel(id,y.slice(0,n-H),H);
+    out[id]={bt:bt,fin:forecastModel(id,y,H),
+      mape:mean(act.map(function(a,i){return Math.abs(a-bt.mean[i])/a}))*100,
+      rmse:Math.sqrt(mean(act.map(function(a,i){return Math.pow(a-bt.mean[i],2)}))),
+      cov:act.filter(function(a,i){return a>=bt.lo[i]&&a<=bt.hi[i]}).length}});
+  return fcCache[key]=out}
+function renderFc(){
+  var all=forecastAll(fc.key),r=all[fc.model],y=SERIES[fc.key].v,n=y.length,H=12;
+  var best=Object.keys(all).reduce(function(a,b){return all[a].mape<=all[b].mape?a:b});
+  var next12=sum(r.fin.mean),last12=sum(y.slice(n-H));
+  var d=next12/last12-1;
+  $('#fk').innerHTML=
+    '<div class="stat"><span class="k">Prévision nov. 2026 – oct. 2027</span><span class="v">'+md(next12)+'</span><span class="d">Somme des 12 prévisions mensuelles</span></div>'+
+    '<div class="stat"><span class="k">Variation vs 12 derniers mois</span><span class="v '+(d>=0?'up':'down')+'">'+spct(d)+'</span><span class="d">12 derniers mois : '+md(last12)+'</span></div>'+
+    '<div class="stat"><span class="k">Erreur sur la période test</span><span class="v">'+nf1.format(r.mape)+' %</span><span class="d">MAPE sur nov. 2025 – oct. 2026</span></div>'+
+    '<div class="stat"><span class="k">Couverture de l’intervalle</span><span class="v">'+r.cov+' / 12</span><span class="d">mois réels dans l’intervalle à 80 %</span></div>';
+  $('#fc-title').textContent=SERIES[fc.key].label+' : historique et prévision';
+  $('#fc-sub').textContent='Modèle : '+MODELS[fc.model].label+'. Les 12 mois de test (en gris) sont prédits sans avoir été vus par le modèle.';
+  $('#tb-models').innerHTML='<thead><tr><th>Modèle</th><th class="n">MAPE</th><th class="n">RMSE (M MAD)</th><th class="n">Couverture 80 %</th><th></th></tr></thead><tbody>'+
+    Object.keys(MODELS).map(function(id){var q=all[id];return '<tr class="'+(id===fc.model?'sel':'')+'"><td>'+MODELS[id].label+'</td><td class="n">'+nf1.format(q.mape)+' %</td><td class="n">'+nf0.format(q.rmse)+'</td><td class="n">'+q.cov+' / 12</td><td>'+(id===best?'<span class="chip good">Meilleur MAPE</span>':'')+'</td></tr>'}).join('')+'</tbody>';
+  drawFc();
+}
+function drawFc(){
+  var all=forecastAll(fc.key),r=all[fc.model],y=SERIES[fc.key].v,n=y.length,H=12,from=n-36,hist=[],bt=[],fin=[[n-1,y[n-1]]],band=[];
+  for(var i=from;i<n;i++)hist.push([i,y[i]]);
+  for(var j=0;j<H;j++){bt.push([n-H+j,r.bt.mean[j]]);fin.push([n+j,r.fin.mean[j]]);band.push([n+j,r.fin.lo[j],r.fin.hi[j]])}
+  bt.unshift([n-H-1,y[n-H-1]]);
+  drawLine($('#ch-fc'),{label:'Historique et prévision de '+SERIES[fc.key].label,
+    series:[{name:'Observé',color:'var(--c1)',pts:hist,width:2.4},{name:'Test : prédit sans voir les données',color:'var(--c2)',pts:bt,dash:'5 4',width:2},{name:'Prévision',color:'var(--c3)',pts:fin,dash:'6 4',width:2.4}],
+    bands:[{name:'Intervalle à 80 %',color:'var(--c3)',pts:band}],
+    markers:[{x:n-H-.5,label:'Début du test'},{x:n-.5,label:'Prévision'}],yMin:0,xMin:from,xMax:n+H-1,
+    yFmt:function(v){return nf0.format(v)},tipTitle:idxLong,
+    xTicks:function(W){var a=[],st=W<520?12:6;for(var i=from;i<n+H;i++)if(i%st===0)a.push([i,idxLabel(i)]);return a}});
+}
+
+/* ---------- onglet 3 : anomalies ---------- */
+var FEATS=[
+  {k:'tva',label:'TVA collectée / CA (%)',mul:100},
+  {k:'credit',label:'Crédit de TVA / CA (%)',mul:100},
+  {k:'var',label:'Variation du CA vs N-1 (%)',mul:100},
+  {k:'achats',label:'Achats / CA (%)',mul:100}];
+var SECT=[
+  {n:'Commerce',w:.34,tva:.17,cr:.012,ach:.82},{n:'Industrie',w:.16,tva:.15,cr:.03,ach:.78},
+  {n:'BTP',w:.14,tva:.16,cr:.025,ach:.85},{n:'Services',w:.26,tva:.19,cr:.01,ach:.55},{n:'Transport',w:.10,tva:.14,cr:.02,ach:.8}];
+var an={seed:2026,pct:5,x:'tva',y:'credit',data:null};
+function genFirms(seed,n){
+  var r=rng(seed),firms=[];
+  for(var i=0;i<n;i++){
+    var u=r(),acc=0,s=SECT[0];for(var k=0;k<SECT.length;k++){acc+=SECT[k].w;if(u<=acc){s=SECT[k];break}}
+    firms.push({id:'E-'+String(i+1).padStart(4,'0'),sector:s.n,
+      ca:Math.min(4e8,Math.max(2e5,Math.exp(Math.log(3e6)+1.2*gauss(r)))),
+      tva:s.tva*(1+.12*gauss(r)),credit:s.cr*Math.exp(.35*gauss(r)),vr:.05+.12*gauss(r),achats:s.ach*(1+.06*gauss(r)),inj:false})}
+  var nInj=Math.round(n*.05),idx=[];for(var q=0;q<n;q++)idx.push(q);
+  for(var a=0;a<nInj;a++){var j=a+Math.floor(r()*(n-a)),t=idx[a];idx[a]=idx[j];idx[j]=t;
+    var f=firms[idx[a]],type=Math.floor(r()*3),subtle=r()<.35;f.inj=true;
+    if(type===0){f.tva*=subtle?.55+r()*.15:.15+r()*.3;f.vr=-(subtle?.1+r()*.1:.15+r()*.3)}
+    else if(type===1){f.credit*=subtle?3+r()*2:5+r()*7}
+    else{f.achats=subtle?.98+r()*.06:1.05+r()*.35}}
+  return firms}
+function iforest(X,opt){
+  var n=X.length,d=X[0].length,r=rng(opt.seed),psi=Math.min(opt.psi,n),maxD=Math.ceil(Math.log2(psi));
+  function cn(m){return m<=1?0:m===2?1:2*(Math.log(m-1)+.5772156649)-2*(m-1)/m}
+  function build(idx,depth){
+    if(depth>=maxD||idx.length<=1)return {size:idx.length};
+    for(var tr=0;tr<d*2;tr++){
+      var f=Math.floor(r()*d),lo=Infinity,hi=-Infinity;
+      for(var i=0;i<idx.length;i++){var v=X[idx[i]][f];if(v<lo)lo=v;if(v>hi)hi=v}
+      if(hi>lo){var s=lo+(hi-lo)*r(),L=[],R=[];
+        for(var i2=0;i2<idx.length;i2++){(X[idx[i2]][f]<s?L:R).push(idx[i2])}
+        if(L.length&&R.length)return {f:f,s:s,l:build(L,depth+1),r:build(R,depth+1)}}}
+    return {size:idx.length}}
+  var forest=[];
+  for(var t=0;t<opt.trees;t++){var ids=[];for(var q=0;q<n;q++)ids.push(q);
+    for(var a=0;a<psi;a++){var j=a+Math.floor(r()*(n-a)),tmp=ids[a];ids[a]=ids[j];ids[j]=tmp}
+    forest.push(build(ids.slice(0,psi),0))}
+  return X.map(function(x){var tot=0;
+    forest.forEach(function(nd){var dp=0;while(nd.f!==undefined){nd=x[nd.f]<nd.s?nd.l:nd.r;dp++}tot+=dp+cn(nd.size)});
+    return Math.pow(2,-(tot/forest.length)/cn(psi))})}
+function fitAnomalies(seed){
+  var firms=genFirms(seed,800),med={};
+  SECT.forEach(function(s){var f=firms.filter(function(x){return x.sector===s.n});
+    med[s.n]={tva:median(f.map(function(x){return x.tva})),credit:median(f.map(function(x){return x.credit})),vr:median(f.map(function(x){return x.vr})),achats:median(f.map(function(x){return x.achats})),lc:median(f.map(function(x){return Math.log(x.credit)}))}});
+  var raw=firms.map(function(f){var m=med[f.sector];return [f.tva-m.tva,Math.log(f.credit)-m.lc,f.vr-m.vr,f.achats-m.achats]});
+  var sd=[0,1,2,3].map(function(j){return robustSd(raw.map(function(x){return x[j]}))});
+  var Z=raw.map(function(x){return x.map(function(v,j){return v/sd[j]})});
+  var sc=iforest(Z,{trees:150,psi:256,seed:seed+7});
+  firms.forEach(function(f,i){f.score=sc[i];f.z=Z[i]});
+  var order=firms.slice().sort(function(a,b){return b.score-a.score}),P=firms.filter(function(f){return f.inj}).length,tp=0,pr=[[0,1]],apSum=0;
+  order.forEach(function(f,i){if(f.inj){tp++;apSum+=tp/(i+1)}pr.push([tp/P,tp/(i+1)]);f.rank=i+1});
+  return {firms:firms,order:order,med:med,P:P,ap:apSum/P,pr:pr}}
+function reasons(f,med){
+  var m=med[f.sector],names=['tva','credit','var','achats'],o=[0,1,2,3].sort(function(a,b){return Math.abs(f.z[b])-Math.abs(f.z[a])}).slice(0,2);
+  return o.filter(function(j,i){return i===0||Math.abs(f.z[j])>=2.5}).map(function(j){
+    var s=f.z[j]>0?'au-dessus':'en dessous';
+    if(j===0)return 'TVA collectée / CA : <b>'+pct(f.tva)+'</b> (secteur : '+pct(m.tva)+')';
+    if(j===1)return 'Crédit de TVA / CA : <b>'+pct(f.credit)+'</b> (secteur : '+pct(m.credit)+')';
+    if(j===2)return 'CA <b>'+spct(f.vr)+'</b> vs N-1 (secteur : '+spct(m.vr)+')';
+    return 'Achats / CA : <b>'+pct(f.achats,0)+'</b> (secteur : '+pct(m.achats,0)+')'})}
+function featVal(f,k){return k==='tva'?f.tva*100:k==='credit'?f.credit*100:k==='var'?f.vr*100:f.achats*100}
+function renderAn(){
+  if(!an.data)an.data=fitAnomalies(an.seed);
+  var D=an.data,N_=D.firms.length,k=Math.round(N_*an.pct/100),flagged=D.order.slice(0,k),tp=flagged.filter(function(f){return f.inj}).length;
+  var prec=tp/k,rec=tp/D.P,prev=D.P/N_;
+  $('#kp-v').textContent=nf1.format(an.pct).replace(',0','')+' %';$('#seed-v').textContent='graine '+an.seed;
+  $('#ak').innerHTML=
+    '<div class="stat"><span class="k">Dossiers signalés</span><span class="v">'+k+' / '+N_+'</span><span class="d">'+D.P+' anomalies injectées au total</span></div>'+
+    '<div class="stat"><span class="k">Précision</span><span class="v">'+nf0.format(prec*100)+' %</span><span class="d">'+tp+' vraies anomalies parmi les '+k+' signalés</span></div>'+
+    '<div class="stat"><span class="k">Rappel</span><span class="v">'+nf0.format(rec*100)+' %</span><span class="d">part des anomalies retrouvées</span></div>'+
+    '<div class="stat"><span class="k">Gain vs hasard</span><span class="v">×'+nf1.format(prec/prev)+'</span><span class="d">précision moyenne (PR-AUC) : '+nf2.format(D.ap)+'</span></div>';
+  var thr=D.order[k-1].score;
+  $('#tb-alerts').innerHTML='<thead><tr><th class="n">Rang</th><th>Dossier</th><th>Secteur</th><th class="n">CA (M MAD)</th><th class="n">Score</th><th>Motifs</th><th>Étiquette synthétique</th></tr></thead><tbody>'+
+    flagged.map(function(f){return '<tr><td class="n">'+f.rank+'</td><td class="mono">'+f.id+'</td><td>'+f.sector+'</td><td class="n">'+nf1.format(f.ca/1e6)+'</td><td class="n">'+nf2.format(f.score)+'</td><td><ul class="reasons">'+reasons(f,D.med).map(function(t){return '<li>'+t+'</li>'}).join('')+'</ul></td><td>'+(f.inj?'<span class="chip hit">Anomalie injectée</span>':'<span class="chip">Aucune</span>')+'</td></tr>'}).join('')+'</tbody>';
+  drawAn();
+}
+function drawAn(){
+  var D=an.data,k=Math.round(D.firms.length*an.pct/100),thr=D.order[k-1].score,fx=FEATS.filter(function(f){return f.k===an.x})[0],fy=FEATS.filter(function(f){return f.k===an.y})[0];
+  var pts=D.firms.map(function(f){return {x:featVal(f,an.x),y:featVal(f,an.y),flag:f.score>=thr,id:f.id,sector:f.sector,score:f.score}});
+  drawScatter($('#ch-sc'),{pts:pts,xLabel:fx.label,yLabel:fy.label});
+  var tp=D.order.slice(0,k).filter(function(f){return f.inj}).length,prev=D.P/D.firms.length;
+  drawLine($('#ch-pr'),{label:'Courbe précision-rappel',
+    series:[{name:'Isolation Forest',color:'var(--c1)',pts:D.pr.slice(1),width:2.2},{name:'Tirage au hasard',color:'var(--c2)',pts:[[0,prev],[1,prev]],dash:'4 4',width:1.6}],
+    dots:[{x:tp/D.P,y:tp/k,color:'var(--c3)'}],xMin:0,xMax:1,yMin:0,yMax:1,
+    yFmt:function(v){return nf0.format(v*100)+' %'},tipTitle:function(x){return 'Rappel '+nf0.format(x*100)+' %'},
+    xTicks:function(){return [0,.25,.5,.75,1].map(function(v){return [v,nf0.format(v*100)+' %']})}});
+}
+
+/* ---------- pilotage ---------- */
+var current='tableau',TABS=['tableau','prevision','anomalies','methode'];
+function render(){
+  if(current==='tableau')renderDash();else if(current==='prevision')renderFc();else if(current==='anomalies')renderAn();
+}
+function show(id){
+  if(TABS.indexOf(id)<0)id='tableau';current=id;
+  TABS.forEach(function(t){$('#p-'+t).hidden=t!==id;var a=$('#t-'+t);if(t===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  render();
+}
+window.addEventListener('hashchange',function(){show(location.hash.slice(1))});
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(render,120)});
+
+/* contrôles */
+(function init(){
+  var ys='';for(var y=LASTY;y>=Y0;y--)ys+='<option value="'+y+'">'+y+(y===LASTY?' (jan. – oct.)':'')+'</option>';
+  $('#yr').innerHTML=ys;
+  var opts=function(keys){return keys.map(function(k){return '<option value="'+k+'">'+SERIES[k].label+'</option>'}).join('')};
+  $('#sr').innerHTML='<optgroup label="Recettes">'+opts(['rec_total','tva','is','ir','dou'])+'</optgroup><optgroup label="Dépenses">'+opts(['dep_total','pers','fonc','inv','comp'])+'</optgroup>';
+  $('#fs').innerHTML=opts(['rec_total','tva','is','ir','dou']);
+  $('#yr').addEventListener('change',function(e){dash.year=+e.target.value;renderDash()});
+  $('#sr').addEventListener('change',function(e){dash.key=e.target.value;renderDash()});
+  $('#fs').addEventListener('change',function(e){fc.key=e.target.value;renderFc()});
+  var fm=$('#fm');
+  fm.innerHTML=Object.keys(MODELS).map(function(id){return '<button type="button" data-m="'+id+'" aria-pressed="'+(id===fc.model)+'">'+MODELS[id].label+'</button>'}).join('');
+  fm.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;fc.model=b.dataset.m;
+    Array.prototype.forEach.call(fm.children,function(c){c.setAttribute('aria-pressed',c===b)});renderFc()});
+  var fo=FEATS.map(function(f){return '<option value="'+f.k+'">'+f.label+'</option>'}).join('');
+  $('#ax').innerHTML=fo;$('#ay').innerHTML=fo;$('#ax').value=an.x;$('#ay').value=an.y;
+  $('#ax').addEventListener('change',function(e){an.x=e.target.value;drawAn()});
+  $('#ay').addEventListener('change',function(e){an.y=e.target.value;drawAn()});
+  $('#kp').addEventListener('input',function(e){an.pct=+e.target.value;renderAn()});
+  $('#regen').addEventListener('click',function(){an.seed+=1;an.data=null;renderAn()});
+  show(location.hash.slice(1));
+  window.__obs={SERIES:SERIES,forecastAll:forecastAll,fitAnomalies:fitAnomalies};
+})();
+})();
+</script>
+
+</body></html>

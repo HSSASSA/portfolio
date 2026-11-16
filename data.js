@@ -195,6 +195,13 @@ const PORTFOLIO = {
       // image:  "assets/project-spring.png",
       link:   "https://github.com/HSSASSA/Spring-Boot-Web-Application.git",
     },
+    {
+      title:  "Public Finance Observatory",
+      desc:   "Interactive web dashboard to explore and visualise public finance indicators.",
+      tags:   ["HTML", "JavaScript", "Data Visualisation", "Public Finance"],
+      icon:   "bar-chart-3",
+      link:   "observatoire-finances-publiques.html",
+    },
   ],
 
   /* ── EDUCATION ───────────────────────────────────────────── */
